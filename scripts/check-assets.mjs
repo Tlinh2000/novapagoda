@@ -1,0 +1,15 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const walk=async dir=>{for(const f of await fs.readdir(dir,{withFileTypes:true})){const p=path.join(dir,f.name);if(f.isDirectory())await walk(p);else if(/\.(js|mjs)$/.test(f.name)){const r=spawnSync(process.execPath,['--check',p],{encoding:'utf8'});if(r.status)throw Error(r.stderr);}}};
+const rootCheck=spawnSync(process.execPath,['--check',path.join(root,'server.js')],{encoding:'utf8'});if(rootCheck.status)throw Error(rootCheck.stderr);
+for(const dir of ['server','shared','client/js','client/data','scripts','tests'])await walk(path.join(root,dir));
+for(const f of ['client/index.html','client/style.css','client/assets/avatar.glb','client/assets/models/buddha-detail.glb','client/assets/paintings/lotus.svg','client/assets/paintings/bodhi.svg','client/data/models.js','client/data/paintings.js','client/assets/lotus.svg','render.yaml'])await fs.access(path.join(root,f));
+const b=await fs.readFile(path.join(root,'client/assets/avatar.glb'));
+if(b.toString('ascii',0,4)!=='glTF'||b.readUInt32LE(4)!==2)throw Error('Avatar phải là GLB 2.0.');
+const jsonLength=b.readUInt32LE(12),gltf=JSON.parse(b.toString('utf8',20,20+jsonLength));
+for(const name of ['Idle','Walk','Run','Meditate','Prostrate','Greet','Laugh','Wave'])if(!gltf.animations?.some(a=>a.name===name))throw Error('Thiếu clip '+name);
+if(!gltf.skins?.length||!gltf.meshes?.some(m=>m.primitives.some(p=>p.attributes.JOINTS_0!==undefined&&p.attributes.WEIGHTS_0!==undefined)))throw Error('Avatar thiếu skin xương.');
+console.log(`Build OK · ${gltf.skins.length} skin · ${gltf.animations.length} skeletal clips · ${Math.round(b.length/1024)} KiB avatar · JavaScript hợp lệ`);

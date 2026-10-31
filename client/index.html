@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#edf0e7">
+  <meta name="description" content="Nova Pagoda — một khoảng bình yên cùng bạn bè. Không gian chùa Việt Nam 3D nhiều người.">
+  <title>Nova Pagoda · Về chùa cùng nhau</title>
+  <link rel="icon" href="/assets/lotus.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css">
+  <script type="importmap">{"imports":{"three":"/vendor/three/three.module.js","three/addons/":"/vendor/addons/"}}</script>
+</head>
+<body>
+  <div id="stage" aria-label="Khuôn viên chùa 3D"><div id="labels"></div></div>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Nova Pagoda"><img src="/assets/lotus.svg" alt="" width="38" height="38"><span>Nova <i>Pagoda</i><small>VỀ CHÙA CÙNG NHAU</small></span></a>
+    <div class="top-info"><span class="season">Một ngày an nhiên <b>✦</b></span><span id="connection" class="connection">Đang mở cổng chùa…</span></div>
+    <button id="room-button" class="room-button" disabled title="Sao chép link mời bạn">♧ <span id="room-code">PHÒNG RIÊNG</span><span class="copy-icon">↗</span></button>
+  </header>
+  <section id="welcome" class="welcome" aria-label="Tạo nhân vật">
+    <div class="intro"><div class="eyebrow"><span></span> NOVA PAGODA · CHÙA VIỆT GIỮA KHÔNG GIAN SỐ</div><h1>Một bước đến chùa.<br>Một khoảng <em>bình yên.</em></h1><p>Đi qua tam quan. Lắng nghe một tiếng chuông.<br>Cùng bạn trở về một khoảng trời an lành.</p><div class="intro-tags"><span>Không gian 3D</span><span>Ghé chùa cùng bạn bè</span><span>Thiền · hoa đăng · lời lành</span></div><div class="chapter-mark"><span>01 /</span> MANG THEO MỘT TÂM AN</div></div>
+    <form id="create-form" class="creator">
+      <div class="card-heading"><span class="eyebrow">BẮT ĐẦU CHUYẾN THĂM</span><span class="tiny-lotus">❀</span></div>
+      <h2>Hôm nay, bạn là ai?</h2><p class="subtext">Chọn một diện mạo, mang theo một tâm an.</p>
+      <div class="avatar-preview"><canvas id="preview" aria-label="Xem trước nhân vật 360 độ; kéo để xoay"></canvas><span id="preview-status">Đang chuẩn bị áo…</span><span class="rotate-hint">↔ Kéo để xoay 360°</span></div>
+      <label for="display-name">Tên hiển thị</label><input id="display-name" name="name" placeholder="Tên của bạn" maxlength="24" required autocomplete="nickname">
+      <label>Vai trò <small>Chọn để xem trang phục</small></label><div id="roles" class="role-options"></div>
+      <div id="abbot-lock" class="abbot-lock" hidden><label for="abbot-password">✦ Mở vai Trụ trì</label><input id="abbot-password" type="password" placeholder="Nhập mật khẩu vai ẩn" autocomplete="off" maxlength="128"><small>Áo huyền kim, vòng kim sắc và hào quang riêng.</small></div>
+      <label>Trang phục</label><div id="outfits" class="outfit-options"></div>
+      <div class="room-entry"><label for="join-code">Mã phòng bạn bè <small>để trống để tạo phòng mới</small></label><input id="join-code" maxlength="6" placeholder="VD: A1B2C3" pattern="[A-Za-z0-9]{6}" autocomplete="off"></div>
+      <button id="enter" class="primary" type="submit" disabled>Bước vào sân chùa <span>↗</span></button>
+      <p class="creator-foot">Không gian mô phỏng văn hóa · Không thu tiền thật</p>
+    </form>
+  </section>
+  <div id="game-ui" hidden>
+    <div class="location"><span class="location-icon">⌂</span><div><b id="location-name">Sân chùa</b><small id="location-desc">Một bước chân, một nhịp thở</small></div></div>
+    <nav class="side-tools" aria-label="Tiện ích"><button id="friends-button" title="Bạn bè"><span>♧</span><small>Bạn bè</small></button><button id="map-button" title="Bản đồ"><span>◇</span><small>Bản đồ</small></button><button id="bag-button" title="Túi đồ"><span>♙</span><small>Túi đồ</small></button><button id="sound-button" title="Bật hoặc tắt âm thanh"><span>♫</span><small>Âm thanh</small></button><button id="help-button" title="Cách chơi"><span>?</span><small>Hướng dẫn</small></button></nav>
+    <div id="context" class="context" hidden><span id="context-name"></span><button id="interact-button" class="primary">Tương tác <kbd>E</kbd></button><button id="read-button" hidden>Đọc kinh</button></div>
+    <div id="chant-line" class="chant-line" hidden>Nam Mô A Di Đà Phật <span>· niệm theo nhịp thở</span></div>
+    <div class="action-wrap"><span class="action-caption">DÀNH MỘT KHOẢNH KHẮC CHO TÂM</span><nav id="action-dock" class="action-dock" aria-label="Động tác nhân vật"></nav></div>
+    <div id="chat-panel" class="chat-panel"><button id="chat-toggle" class="chat-title">Trò chuyện <span id="online-count">1 người trong chùa</span><b>⌄</b></button><div id="chat-log" class="chat-log" role="log" aria-live="polite"></div><form id="chat-form"><input id="chat-input" placeholder="Gửi một lời chào…" maxlength="240" autocomplete="off" aria-label="Tin nhắn"><button aria-label="Gửi">↗</button></form></div>
+    <div id="joystick" aria-label="Kéo để di chuyển"><div id="joystick-thumb"></div></div><button id="run-button" class="run-button">Chạy</button>
+    <div class="movement-tip">Chạm mặt sân để đi <span>·</span> WASD / phím mũi tên <span>·</span> Shift để chạy</div>
+    <button id="settings-button" class="admin-button" title="Thay tranh quản trị">⚙</button>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <dialog id="modal"><div class="modal-heading"><span id="modal-eyebrow" class="eyebrow">NOVA PAGODA</span><button id="modal-close" aria-label="Đóng">×</button></div><div id="modal-content"></div></dialog>
+  <noscript>Hãy bật JavaScript trong trình duyệt để vào chùa.</noscript>
+  <script src="/socket.io/socket.io.js"></script><script type="module" src="/js/app.js"></script>
+</body></html>
